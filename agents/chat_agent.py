@@ -27,6 +27,7 @@ def generate_chat_response_llm(message: str, context: Dict[str, Any]) -> str:
         "You are an AI Revenue Assistant for a fintech dashboard. "
         "Answer the user's question using ONLY the provided context. "
         "Keep your answer under 100 words. Be professional and concise. "
+        "Format all monetary values in Indian Rupees (₹). "
         "Do NOT invent numbers, payments, or data. If the answer is not in the context, explicitly say it is unavailable."
     )
     
@@ -102,8 +103,10 @@ def handle_chat_message(message: str, db: Session) -> Dict[str, str]:
             "source": "database"
         }
 
+    is_complex = any(k in msg_lower for k in ["strategy", "recommend", "revenue", "how much"])
+
     # Heuristic 2: Priorities
-    if any(k in msg_lower for k in ["priority", "critical transactions", "high priority"]):
+    if not is_complex and any(k in msg_lower for k in ["priority", "critical transactions", "high priority"]):
         from api.main import get_overview
         overview = get_overview(db)
         counts = overview['priority_counts']
@@ -146,11 +149,33 @@ def handle_chat_message(message: str, db: Session) -> Dict[str, str]:
 
     # Fallback: Let LLM answer based on overview + queue context (very constrained)
     from api.main import get_overview, get_recovery_queue
+    from models.recovery import RecoveryPrediction
+    
     overview = get_overview(db)
     queue = get_recovery_queue(limit=5, db=db)
     
+    priority_results = db.query(
+        RecoveryPrediction.recovery_priority,
+        func.count(RecoveryPrediction.id),
+        func.sum(RecoveryPrediction.revenue_at_risk),
+        func.sum(RecoveryPrediction.estimated_recoverable_revenue)
+    ).group_by(
+        RecoveryPrediction.recovery_priority
+    ).all()
+    
+    priorities = [
+        {
+            "priority": priority,
+            "transaction_count": count,
+            "revenue_at_risk": float(revenue_at_risk or 0),
+            "estimated_recoverable": float(recoverable or 0)
+        }
+        for priority, count, revenue_at_risk, recoverable in priority_results
+    ]
+    
     context = {
         "overview": overview,
+        "priorities": priorities,
         "top_5_queue": queue
     }
     
