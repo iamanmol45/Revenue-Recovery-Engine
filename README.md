@@ -1,4 +1,4 @@
-# Razorpay AI Revenue Recovery Engine
+# Revive AI - An AI Powered Revenue Recovery Engine
 
 **Identify → Prioritize → Reason → Recover**
 
