@@ -4,6 +4,8 @@
 
 Razorpay AI Revenue Recovery Engine is an AI-assisted revenue recovery platform that identifies high-risk transactions, quantifies financial exposure, analyzes customer behavior, prioritizes recovery opportunities, recommends recovery strategies, and tracks recovery outcomes through a merchant-facing dashboard.
 
+🔗 **Live Deployment**: [https://revenue-recovery-engine-jade.vercel.app/](https://revenue-recovery-engine-jade.vercel.app/)
+
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.104-009688)
 ![React](https://img.shields.io/badge/React-19.2-61DAFB)
