@@ -1,0 +1,16 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+.ipynb_checkpoints/
+.vscode/
+.idea/
+*.log
+
+data/raw/*.csv

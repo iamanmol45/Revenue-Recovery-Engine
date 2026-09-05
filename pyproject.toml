@@ -1,0 +1,15 @@
+[tool.pyright]
+venvPath = "."
+venv = "venv"
+extraPaths = ["."]
+executionEnvironments = [
+  { root = "." }
+]
+
+[tool.pyrefly]
+project-root = "."
+venv-path = "."
+venv = "venv"
+search-paths = ["."]
+import-roots = ["."]
+disable-src-fallback = true
