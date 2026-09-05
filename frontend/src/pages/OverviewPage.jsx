@@ -66,8 +66,8 @@ export default function OverviewPage({
       {/* Page Top Header */}
       <div className="dashboard-top-bar">
         <div className="top-bar-title">
-          <h1>Revenue Recovery</h1>
-          <p>Payment failure risk analysis and recovery operations</p>
+          <h1>Revive AI</h1>
+          <p>AI-powered revenue recovery and payment operations</p>
         </div>
         <div className="top-bar-controls">
           <div className="filter-dropdown">
