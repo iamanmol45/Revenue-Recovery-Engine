@@ -15,6 +15,10 @@ from models.recovery_attempt import RecoveryAttempt
 RAW_CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "raw", "transactions.csv")
 SCORED_CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "processed", "recovery_scored_transactions.csv")
 
+CUSTOMER_BATCH_SIZE = 10000
+PAYMENT_BATCH_SIZE = 2000
+PREDICTION_BATCH_SIZE = 5000
+
 def validate_and_map():
     print("Loading raw dataset...")
     raw_df = pd.read_csv(RAW_CSV_PATH)
@@ -184,24 +188,24 @@ def load_data(dry_run=False, reset=False, confirm_reset=False):
         db.commit()
         
         print(f"Inserting Customers ({len(customer_records)})...")
-        for i in range(0, len(customer_records), 10000):
-            chunk = customer_records[i:i+10000]
+        for i in range(0, len(customer_records), CUSTOMER_BATCH_SIZE):
+            chunk = customer_records[i:i+CUSTOMER_BATCH_SIZE]
             db.bulk_insert_mappings(Customer, chunk)
             db.commit()
             
         print(f"Inserting Payments ({len(payment_records)})...")
-        for i in range(0, len(payment_records), 20000):
-            chunk = payment_records[i:i+20000]
+        for i in range(0, len(payment_records), PAYMENT_BATCH_SIZE):
+            chunk = payment_records[i:i+PAYMENT_BATCH_SIZE]
             db.bulk_insert_mappings(Payment, chunk)
             db.commit()
-            print(f"  Inserted {min(i+20000, len(payment_records))} / {len(payment_records)}")
+            print(f"  Inserted {min(i+PAYMENT_BATCH_SIZE, len(payment_records))} / {len(payment_records)}")
             
         print(f"Inserting Predictions ({len(prediction_records)})...")
-        for i in range(0, len(prediction_records), 20000):
-            chunk = prediction_records[i:i+20000]
+        for i in range(0, len(prediction_records), PREDICTION_BATCH_SIZE):
+            chunk = prediction_records[i:i+PREDICTION_BATCH_SIZE]
             db.bulk_insert_mappings(RecoveryPrediction, chunk)
             db.commit()
-            print(f"  Inserted {min(i+20000, len(prediction_records))} / {len(prediction_records)}")
+            print(f"  Inserted {min(i+PREDICTION_BATCH_SIZE, len(prediction_records))} / {len(prediction_records)}")
             
         print("\n--- POST-LOAD VALIDATION ---")
         post_cust = db.query(func.count(Customer.id)).scalar()
